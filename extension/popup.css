@@ -1,0 +1,333 @@
+:root {
+  color-scheme: dark;
+  --bg-main: #0a0a0f;
+  --bg-panel: #12121a;
+  --bg-soft: rgba(255, 255, 255, 0.04);
+  --text-primary: #ffffff;
+  --text-secondary: #8888aa;
+  --brand: #6c63ff;
+  --danger: #ff4757;
+  --success: #2ed573;
+  --warning: #ffa502;
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 380px;
+  min-height: 580px;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(108, 99, 255, 0.18), transparent 30%),
+    radial-gradient(circle at top right, rgba(255, 71, 87, 0.16), transparent 28%),
+    linear-gradient(180deg, #0d0d14 0%, #09090d 100%);
+  color: var(--text-primary);
+  font-family: Inter, sans-serif;
+}
+
+body {
+  position: relative;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.popup-shell {
+  min-height: 580px;
+  padding: 18px;
+}
+
+.popup-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.popup-header h1,
+.screen h2 {
+  margin: 8px 0 0;
+  font-family: Sora, sans-serif;
+  font-size: 26px;
+  line-height: 1.2;
+}
+
+.screen-copy,
+.motivation-copy,
+.challenge-copy,
+.result-meta {
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.status-banner {
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.status-banner.warning {
+  border-color: rgba(255, 165, 2, 0.35);
+  background: rgba(255, 165, 2, 0.1);
+}
+
+.status-banner.danger {
+  border-color: rgba(255, 71, 87, 0.35);
+  background: rgba(255, 71, 87, 0.12);
+}
+
+.screen-stack {
+  margin-top: 16px;
+}
+
+.screen {
+  display: none;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: rgba(18, 18, 26, 0.9);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  padding: 22px;
+}
+
+.screen.active {
+  display: block;
+}
+
+.quick-actions {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.choice-card,
+.suggestion-card {
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--bg-soft);
+  padding: 18px;
+  text-align: left;
+  color: var(--text-primary);
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.choice-card:hover,
+.suggestion-card:hover,
+.pill-button:hover,
+.primary-button:hover,
+.secondary-button:hover,
+.ghost-button:hover {
+  transform: translateY(-1px);
+}
+
+.choice-card:hover,
+.suggestion-card:hover,
+.pill-button.is-selected {
+  border-color: rgba(108, 99, 255, 0.55);
+  background: rgba(108, 99, 255, 0.12);
+}
+
+.choice-title {
+  display: block;
+  font-family: Sora, sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.choice-copy {
+  display: block;
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.inline-form,
+.field-group,
+.action-column,
+.suggestion-list {
+  display: grid;
+  gap: 12px;
+}
+
+.field-group + .field-group {
+  margin-top: 24px;
+}
+
+#intensity-field {
+  margin-top: 32px;
+}
+
+#get-help-btn,
+.regenerate-btn {
+  margin-top: 24px;
+}
+
+.inline-form {
+  margin-top: 18px;
+}
+
+.inline-form label,
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+input[type='text'],
+input[type='number'] {
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 14px;
+  color: var(--text-primary);
+}
+
+input[type='range'] {
+  width: 100%;
+  accent-color: var(--brand);
+}
+
+.pill-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill-button,
+.primary-button,
+.secondary-button,
+.ghost-button,
+.link-button {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.pill-button {
+  padding: 10px 14px;
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button {
+  padding: 13px 16px;
+  font-weight: 600;
+}
+
+.primary-button {
+  background: var(--brand);
+  border-color: transparent;
+}
+
+.secondary-button {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ghost-button,
+.link-button {
+  background: transparent;
+}
+
+.link-button {
+  border: none;
+  padding: 0;
+  color: var(--text-secondary);
+  justify-self: start;
+}
+
+.challenge-card {
+  margin-top: 20px;
+  border: 1px solid rgba(108, 99, 255, 0.25);
+  border-radius: 24px;
+  background: rgba(108, 99, 255, 0.08);
+  padding: 18px;
+}
+
+.challenge-title {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.timer-display {
+  margin-top: 18px;
+  font-family: Sora, sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.suggestion-card h3 {
+  margin: 0;
+  font-size: 18px;
+  font-family: Sora, sans-serif;
+}
+
+.suggestion-card p {
+  margin: 10px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.result-meta {
+  margin-bottom: 0;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  background: rgba(10, 10, 15, 0.86);
+  backdrop-filter: blur(6px);
+  border-radius: 24px;
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 4px solid rgba(108, 99, 255, 0.2);
+  border-top-color: var(--brand);
+  animation: spin 0.9s linear infinite;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

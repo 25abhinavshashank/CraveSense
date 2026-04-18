@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CraveSense</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="popup-shell">
+      <header class="popup-header">
+        <div>
+          <p class="eyebrow">CraveSense</p>
+          <h1>Craving Check-In</h1>
+        </div>
+        <button id="open-dashboard-top" class="ghost-button" type="button">Dashboard</button>
+      </header>
+
+      <div id="status-banner" class="status-banner hidden"></div>
+
+      <main class="screen-stack">
+        <section id="screen-1" class="screen active">
+          <h2>What's happening right now?</h2>
+          <p class="screen-copy">Pick the option that matches the moment. We'll keep the next step fast.</p>
+
+          <div class="quick-actions">
+            <button id="real-hunger-btn" class="choice-card" type="button">
+              <span class="choice-title">Real Hunger</span>
+              <span class="choice-copy">Eat something solid and log the calories.</span>
+            </button>
+            <button id="craving-btn" class="choice-card" type="button">
+              <span class="choice-title">Craving / Urge</span>
+              <span class="choice-copy">Get coaching before this turns into a diet break.</span>
+            </button>
+          </div>
+
+          <form id="real-hunger-form" class="inline-form hidden">
+            <label>
+              What are you eating?
+              <input id="real-hunger-food" type="text" placeholder="Example: yogurt bowl" />
+            </label>
+            <label>
+              Calories
+              <input id="real-hunger-calories" type="number" min="0" placeholder="250" />
+            </label>
+            <button id="log-real-hunger" class="primary-button" type="submit">Log Real Hunger</button>
+          </form>
+        </section>
+
+        <section id="screen-2" class="screen">
+          <button id="back-to-screen-1" class="link-button" type="button">Back</button>
+          <h2>Craving details</h2>
+          <p class="screen-copy">Give us just enough context to make the coaching feel personal.</p>
+
+          <div class="field-group">
+            <p class="field-label">Taste type</p>
+            <div id="taste-options" class="pill-grid">
+              <button class="pill-button" data-group="taste" data-value="sweet" type="button">Sweet</button>
+              <button class="pill-button" data-group="taste" data-value="salty" type="button">Salty</button>
+              <button class="pill-button" data-group="taste" data-value="oily" type="button">Oily</button>
+              <button class="pill-button" data-group="taste" data-value="spicy" type="button">Spicy</button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <p class="field-label">Trigger</p>
+            <div id="trigger-options" class="pill-grid">
+              <button class="pill-button" data-group="trigger" data-value="bored" type="button">Bored</button>
+              <button class="pill-button" data-group="trigger" data-value="stressed" type="button">Stressed</button>
+              <button class="pill-button" data-group="trigger" data-value="habit" type="button">Habit</button>
+              <button class="pill-button" data-group="trigger" data-value="saw_food" type="button">Saw Food</button>
+              <button class="pill-button" data-group="trigger" data-value="tired" type="button">Tired</button>
+            </div>
+          </div>
+
+          <div id="intensity-field" class="field-group">
+            <label class="field-label" for="intensity-slider">Intensity: <span id="intensity-value">5</span>/10</label>
+            <input id="intensity-slider" type="range" min="1" max="10" value="5" />
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="specific-food-input">Specific food craving? (optional)</label>
+            <input id="specific-food-input" type="text" placeholder="Example: samosa, chocolate..." />
+          </div>
+
+          <button id="get-help-btn" class="primary-button" type="button">Get Help</button>
+        </section>
+
+        <section id="screen-3" class="screen">
+          <p class="eyebrow">Personal coaching</p>
+          <p id="motivation-text" class="motivation-copy"></p>
+
+          <div class="challenge-card">
+            <p class="challenge-title">Beat the Craving Challenge</p>
+            <p id="challenge-text" class="challenge-copy"></p>
+            <div id="challenge-timer" class="timer-display">10:00</div>
+          </div>
+
+          <div class="action-column">
+            <button id="challenge-complete-btn" class="primary-button" type="button">I Did It! Craving Gone</button>
+            <button id="still-craving-btn" class="secondary-button" type="button">Still Have Craving</button>
+          </div>
+        </section>
+
+        <section id="screen-4" class="screen">
+          <h2>Okay, let's handle this smartly</h2>
+          <p id="suggestions-subtitle" class="screen-copy"></p>
+
+          <div id="suggestion-list" class="suggestion-list"></div>
+
+          <button id="regenerate-suggestions-btn" class="secondary-button regenerate-btn" type="button">Suggest 3 different options</button>
+
+          <form id="gave-in-form" class="inline-form">
+            <p class="field-label">I gave in and ate something else</p>
+            <label>
+              Food
+              <input id="gave-in-food" type="text" placeholder="What did you eat?" />
+            </label>
+            <label>
+              Calories
+              <input id="gave-in-calories" type="number" min="0" placeholder="320" />
+            </label>
+            <button class="secondary-button" type="submit">Log What I Ate</button>
+          </form>
+        </section>
+
+        <section id="screen-5" class="screen">
+          <p class="eyebrow">Logged</p>
+          <h2 id="result-title"></h2>
+          <p id="result-body" class="screen-copy"></p>
+          <p id="result-meta" class="result-meta"></p>
+
+          <div class="action-column">
+            <button id="close-popup-btn" class="primary-button" type="button">Close</button>
+            <button id="open-dashboard-btn" class="secondary-button" type="button">Open Dashboard</button>
+            <button id="start-over-btn" class="link-button" type="button">Start another check-in</button>
+          </div>
+        </section>
+      </main>
+
+      <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Working on it...</p>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
