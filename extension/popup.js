@@ -399,6 +399,48 @@ async function apiFetch(path, options = {}) {
   return text ? JSON.parse(text) : {};
 }
 
+function deriveMealType({ hungerType, timestamp }) {
+  const date = timestamp ? new Date(timestamp) : new Date();
+  const hour = date.getHours();
+
+  if (hungerType === 'real_hunger') {
+    if (hour >= 5 && hour < 11) return 'breakfast';
+    if (hour >= 11 && hour < 16) return 'lunch';
+    if (hour >= 16 && hour < 22) return 'dinner';
+  }
+
+  return 'snack';
+}
+
+async function tryLogFoodDirectly({ foodName, calories, hungerType, timestamp }) {
+  const trimmedName = String(foodName || '').trim();
+  const numericCalories = Number(calories || 0);
+
+  if (!trimmedName || !numericCalories || numericCalories <= 0) {
+    return;
+  }
+
+  // Best-effort: do not block craving logging if food endpoint fails.
+  try {
+    await apiFetch('/food/log', {
+      method: 'POST',
+      body: JSON.stringify({
+        foodName: trimmedName,
+        quantity: '1 serving',
+        mealType: deriveMealType({ hungerType, timestamp }),
+        calories: numericCalories,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+        timestamp: timestamp || new Date().toISOString()
+      })
+    });
+  } catch (error) {
+    // Silent on purpose: users still get craving logged; dashboard food log may lag.
+  }
+}
+
 async function syncPendingLogs() {
   const pendingLogs = getPendingLogs();
   if (!pendingLogs.length || !state.authenticated || state.offline) {
@@ -728,13 +770,24 @@ async function handleSuggestionChoice(index) {
 
   setLoading(true, 'Logging your smart swap...');
 
+  const timestamp = new Date().toISOString();
   const result = await saveCravingLog({
     ...getCurrentCravingPayload(),
     outcome: 'ate_healthy_swap',
     challengeCompleted: false,
     caloriesConsumed: suggestion.calories,
-    foodEaten: suggestion.name
+    foodEaten: suggestion.name,
+    timestamp
   });
+
+  if (result.synced) {
+    await tryLogFoodDirectly({
+      foodName: suggestion.name,
+      calories: suggestion.calories,
+      hungerType: 'craving',
+      timestamp
+    });
+  }
 
   setLoading(false);
 
@@ -759,13 +812,24 @@ async function handleGaveInSubmit(event) {
 
   setLoading(true, 'Logging this craving...');
 
+  const timestamp = new Date().toISOString();
   const result = await saveCravingLog({
     ...getCurrentCravingPayload(),
     outcome: 'gave_in',
     challengeCompleted: false,
     caloriesConsumed: calories,
-    foodEaten: foodName
+    foodEaten: foodName,
+    timestamp
   });
+
+  if (result.synced) {
+    await tryLogFoodDirectly({
+      foodName,
+      calories,
+      hungerType: 'craving',
+      timestamp
+    });
+  }
 
   setLoading(false);
 
@@ -790,6 +854,7 @@ async function handleRealHungerSubmit(event) {
 
   setLoading(true, 'Logging real hunger...');
 
+  const timestamp = new Date().toISOString();
   const result = await saveCravingLog({
     hungerType: 'real_hunger',
     tasteType: 'specific',
@@ -802,8 +867,18 @@ async function handleRealHungerSubmit(event) {
     caloriesConsumed: calories,
     foodEaten: foodName,
     aiMotivation: 'Logged as real hunger in the extension.',
-    aiSuggestions: []
+    aiSuggestions: [],
+    timestamp
   });
+
+  if (result.synced) {
+    await tryLogFoodDirectly({
+      foodName,
+      calories,
+      hungerType: 'real_hunger',
+      timestamp
+    });
+  }
 
   setLoading(false);
 
