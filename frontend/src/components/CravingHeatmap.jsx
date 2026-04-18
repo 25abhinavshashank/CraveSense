@@ -27,8 +27,8 @@ export default function CravingHeatmap({ logs = [] }) {
   const maxCount = Math.max(1, ...Object.values(counts).flat());
 
   return (
-    <section className="panel p-6">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <section className="panel min-w-0 p-4 sm:p-6">
+      <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-3">
         <div>
           <h2 className="section-title">When your cravings hit</h2>
           <p className="mt-1 copy-muted">Higher frequency hours appear darker and more vibrant.</p>
@@ -67,7 +67,7 @@ export default function CravingHeatmap({ logs = [] }) {
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-end gap-2 text-[10px] font-bold uppercase tracking-widest text-muted">
+      <div className="mt-6 flex flex-wrap items-center justify-start gap-2 text-[10px] font-bold uppercase tracking-widest text-muted sm:justify-end">
         <span>Less Cravings</span>
         {[0, 0.25, 0.5, 0.75, 1].map((level) => (
           <div

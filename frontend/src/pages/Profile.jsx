@@ -62,23 +62,23 @@ export default function Profile({ api, user }) {
   return (
     <div className="px-4 pb-12 pt-6 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-7xl space-y-6">
-        <header className="panel relative overflow-hidden p-6">
+        <header className="panel relative overflow-hidden p-4 sm:p-6">
           <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand/15 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-success/10 blur-3xl" />
 
           <p className="text-xs uppercase tracking-[0.28em] text-brand">Profile</p>
-          <h1 className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-4xl">
+          <h1 className="mt-3 font-display text-2xl font-semibold leading-tight sm:text-3xl md:text-4xl">
             {user?.name || 'Your'} insights & trends
           </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-white/75">
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/75 sm:leading-7">
             This page keeps the dashboard clean—weekly progress, your craving calendar, and the AI pattern report all live here.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/dashboard" className="secondary-btn">
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Link to="/dashboard" className="secondary-btn w-full text-center sm:w-auto">
               Back to Dashboard
             </Link>
-            <Link to="/food-log" className="primary-btn">
+            <Link to="/food-log" className="primary-btn w-full text-center sm:w-auto">
               Log Food
             </Link>
           </div>
@@ -90,20 +90,53 @@ export default function Profile({ api, user }) {
 
         <ProgressStats stats={stats} caloriesRemaining={0} />
 
-        <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="grid min-w-0 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <PatternCard pattern={pattern} />
 
-          <section className="panel p-6">
-            <div className="flex items-end justify-between gap-4">
-              <div>
+          <section className="panel min-w-0 p-4 sm:p-6">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+              <div className="min-w-0">
                 <h2 className="section-title">Recent Craving Log</h2>
                 <p className="mt-1 copy-muted">The latest 12 entries across the last 30 days.</p>
               </div>
-              <p className="text-sm text-muted">{recentCravings.length} entries</p>
+              <p className="shrink-0 text-sm text-muted">{recentCravings.length} entries</p>
             </div>
 
-            <div className="mt-6 overflow-x-auto">
-              <table className="min-w-full divide-y divide-white/10 text-left text-sm">
+            <div className="mt-6 space-y-3 md:hidden">
+              {recentCravings.map((log) => (
+                <article
+                  key={log._id}
+                  className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/85"
+                >
+                  <p className="font-medium text-white">{formatDateTime(log.timestamp)}</p>
+                  <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-xs sm:text-sm">
+                    <div>
+                      <dt className="text-muted">Type</dt>
+                      <dd className="mt-0.5 capitalize">{log.tasteType || log.hungerType}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted">Trigger</dt>
+                      <dd className="mt-0.5 capitalize">{String(log.trigger || 'other').replace('_', ' ')}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted">Intensity</dt>
+                      <dd className="mt-0.5">{log.intensity}/10</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted">Calories</dt>
+                      <dd className="mt-0.5">{Math.round(log.caloriesConsumed || 0)}</dd>
+                    </div>
+                    <div className="col-span-2">
+                      <dt className="text-muted">Outcome</dt>
+                      <dd className="mt-0.5 capitalize">{String(log.outcome || '—').replace(/_/g, ' ')}</dd>
+                    </div>
+                  </dl>
+                </article>
+              ))}
+            </div>
+
+            <div className="mt-6 hidden overflow-x-auto md:block">
+              <table className="min-w-[640px] w-full divide-y divide-white/10 text-left text-sm">
                 <thead>
                   <tr className="text-xs uppercase tracking-[0.22em] text-muted">
                     <th className="pb-3">Time</th>
