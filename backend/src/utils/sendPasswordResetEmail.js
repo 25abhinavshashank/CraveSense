@@ -10,17 +10,32 @@ async function sendPasswordResetEmail({ to, resetUrl }) {
     if (process.env.NODE_ENV !== 'production') {
       console.info(`[CraveSense] Password reset for ${to}:\n${resetUrl}\n`);
     } else {
-      console.warn('[CraveSense] SMTP not configured; password reset email was not sent.');
+      console.warn(
+        '[CraveSense] SMTP not configured; password reset email was not sent. Set SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS.'
+      );
     }
     return;
   }
 
+  const smtpPort = Number(SMTP_PORT) || 587;
+  const secure = smtpPort === 465;
+  const debugEnabled = String(process.env.SMTP_DEBUG || '').toLowerCase() === 'true';
+
   const transporter = nodemailer.createTransport({
     host: SMTP_HOST,
-    port: Number(SMTP_PORT) || 587,
-    secure: Number(SMTP_PORT) === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS }
+    port: smtpPort,
+    secure,
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+    ...(debugEnabled ? { logger: true, debug: true } : null)
   });
+
+  // Fail fast with a clearer server log if SMTP creds/host/port are wrong.
+  try {
+    await transporter.verify();
+  } catch (error) {
+    console.error('[CraveSense] SMTP verify failed:', error?.message || error);
+    throw error;
+  }
 
   await transporter.sendMail({
     from: EMAIL_FROM || SMTP_USER,
