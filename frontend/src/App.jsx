@@ -5,7 +5,9 @@ import AppHeader from './components/AppHeader';
 import Dashboard from './pages/Dashboard';
 import FoodLogPage from './pages/FoodLogPage';
 import Landing from './pages/Landing';
+import ForgotPassword from './pages/ForgotPassword';
 import Login from './pages/Login';
+import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import Register from './pages/Register';
 import Settings from './pages/Settings';
@@ -141,6 +143,30 @@ export default function App() {
               <Navigate to="/dashboard" replace />
             ) : (
               <Register api={api} onAuthSuccess={handleAuthSuccess} />
+            )
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            bootstrapping ? (
+              <LoadingScreen />
+            ) : user ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <ForgotPassword api={api} />
+            )
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            bootstrapping ? (
+              <LoadingScreen />
+            ) : user ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <ResetPassword api={api} />
             )
           }
         />

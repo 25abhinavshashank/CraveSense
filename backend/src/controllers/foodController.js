@@ -1,16 +1,11 @@
 const FoodLog = require('../models/FoodLog');
 const { getNutrition } = require('../services/nutritionService');
+const { getLocalDateString } = require('../utils/dateUtils');
 
-function getDateKey(date = new Date()) {
-  const current = new Date(date);
-  const year = current.getFullYear();
-  const month = String(current.getMonth() + 1).padStart(2, '0');
-  const day = String(current.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+// Using getLocalDateString from utils instead of internal getDateKey
 
 async function summarizeToday(user) {
-  const todayKey = getDateKey();
+  const todayKey = getLocalDateString();
   const entries = await FoodLog.find({ userId: user._id, date: todayKey }).sort({ timestamp: -1 }).lean();
 
   const grouped = {
@@ -103,7 +98,7 @@ async function logFood(req, res, next) {
 
     const foodLog = await FoodLog.create({
       userId: req.user._id,
-      date: getDateKey(createdAt),
+      date: getLocalDateString(createdAt),
       mealType,
       foodName,
       quantity,

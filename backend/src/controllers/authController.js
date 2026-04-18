@@ -1,5 +1,7 @@
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { sendPasswordResetEmail } = require('../utils/sendPasswordResetEmail');
 const { maybeResetDailyCalories } = require('../middleware/authMiddleware');
 const { calculateDietDay } = require('../services/patternService');
 
@@ -165,6 +167,80 @@ async function refresh(req, res, next) {
   }
 }
 
+const FORGOT_PASSWORD_RESPONSE = {
+  message: 'If an account exists for that email, you will receive password reset instructions shortly.'
+};
+
+async function forgotPassword(req, res, next) {
+  try {
+    const rawEmail = req.body.email?.trim();
+    if (!rawEmail) {
+      return res.status(400).json({ message: 'Email is required.' });
+    }
+
+    const email = rawEmail.toLowerCase();
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.json(FORGOT_PASSWORD_RESPONSE);
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashed = crypto.createHash('sha256').update(resetToken).digest('hex');
+    user.passwordResetToken = hashed;
+    user.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000);
+    await user.save({ validateBeforeSave: false });
+
+    const clientUrl = (process.env.CLIENT_URL || 'http://localhost:5173').replace(/\/$/, '');
+    const resetUrl = `${clientUrl}/reset-password?token=${resetToken}&email=${encodeURIComponent(email)}`;
+
+    try {
+      await sendPasswordResetEmail({ to: user.email, resetUrl });
+    } catch (mailError) {
+      console.error('Password reset email failed:', mailError.message);
+    }
+
+    res.json(FORGOT_PASSWORD_RESPONSE);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function resetPassword(req, res, next) {
+  try {
+    const { email, token, password } = req.body;
+
+    if (!email || !token || !password) {
+      return res.status(400).json({ message: 'Email, reset token, and new password are required.' });
+    }
+
+    if (String(password).length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters.' });
+    }
+
+    const hashed = crypto.createHash('sha256').update(String(token)).digest('hex');
+    const user = await User.findOne({
+      email: String(email).trim().toLowerCase(),
+      passwordResetToken: hashed,
+      passwordResetExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Reset link is invalid or has expired. Request a new one.' });
+    }
+
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    user.refreshToken = '';
+    await user.save();
+
+    res.json({ message: 'Password updated. You can log in with your new password.' });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function getMe(req, res, next) {
   try {
     res.json({ user: buildUserPayload(req.user) });
@@ -202,10 +278,12 @@ async function updateProfile(req, res, next) {
 }
 
 module.exports = {
+  forgotPassword,
   getMe,
   login,
   logout,
   refresh,
   register,
+  resetPassword,
   updateProfile
 };

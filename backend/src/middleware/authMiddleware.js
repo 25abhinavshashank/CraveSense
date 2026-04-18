@@ -1,19 +1,15 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
-function isSameCalendarDay(firstDate, secondDate) {
-  return (
-    firstDate.getFullYear() === secondDate.getFullYear() &&
-    firstDate.getMonth() === secondDate.getMonth() &&
-    firstDate.getDate() === secondDate.getDate()
-  );
-}
+const { getLocalDateString } = require('../utils/dateUtils');
 
 async function maybeResetDailyCalories(user) {
   const now = new Date();
-  const lastReset = user.lastCalorieReset ? new Date(user.lastCalorieReset) : null;
+  const todayStr = getLocalDateString(now);
 
-  if (!lastReset || !isSameCalendarDay(lastReset, now)) {
+  const lastReset = user.lastCalorieReset ? new Date(user.lastCalorieReset) : null;
+  const lastResetStr = lastReset ? getLocalDateString(lastReset) : null;
+
+  if (todayStr !== lastResetStr) {
     user.caloriesConsumedToday = 0;
     user.lastCalorieReset = now;
     await user.save();

@@ -76,6 +76,14 @@ const userSchema = new mongoose.Schema(
     lastWarnedAt: {
       type: Date,
       default: null
+    },
+    passwordResetToken: {
+      type: String,
+      select: false
+    },
+    passwordResetExpires: {
+      type: Date,
+      select: false
     }
   },
   {
@@ -100,6 +108,8 @@ userSchema.methods.toSafeObject = function toSafeObject() {
   const user = this.toObject({ versionKey: false });
   delete user.password;
   delete user.refreshToken;
+  delete user.passwordResetToken;
+  delete user.passwordResetExpires;
   return user;
 };
 

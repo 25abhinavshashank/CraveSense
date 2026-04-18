@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Brain } from 'lucide-react';
 
 export default function Login({ api, onAuthSuccess }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const passwordResetBanner = location.state?.passwordReset;
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -36,6 +38,12 @@ export default function Login({ api, onAuthSuccess }) {
         <h1 className="mt-4 font-display text-4xl font-extrabold leading-tight">Log in</h1>
         <p className="mt-3 copy-muted">Pick up your dashboard, danger zones, and streak where you left off.</p>
 
+        {passwordResetBanner ? (
+          <div className="mt-6 rounded-2xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
+            Password updated. You can log in with your new password.
+          </div>
+        ) : null}
+
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
           <div>
             <label className="label-text" htmlFor="email">
@@ -53,9 +61,14 @@ export default function Login({ api, onAuthSuccess }) {
           </div>
 
           <div>
-            <label className="label-text" htmlFor="password">
-              Password
-            </label>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <label className="label-text mb-0" htmlFor="password">
+                Password
+              </label>
+              <Link to="/forgot-password" className="shrink-0 text-sm font-semibold text-brand hover:underline">
+                Forgot password?
+              </Link>
+            </div>
             <input
               id="password"
               type="password"
