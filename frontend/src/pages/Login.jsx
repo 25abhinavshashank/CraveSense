@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Brain } from 'lucide-react';
 
 export default function Login({ api, onAuthSuccess }) {
   const navigate = useNavigate();
@@ -26,8 +27,13 @@ export default function Login({ api, onAuthSuccess }) {
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-10">
       <div className="panel w-full max-w-lg p-8 sm:p-10">
-        <p className="text-sm uppercase tracking-[0.25em] text-brand">Welcome back</p>
-        <h1 className="mt-4 font-display text-4xl font-semibold">Log in to CraveSense</h1>
+        <Link to="/" className="inline-flex mb-8">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand shadow-lg shadow-brand/20">
+            <Brain size={28} className="text-white" />
+          </div>
+        </Link>
+        <p className="text-sm font-bold uppercase tracking-wider text-brand">Welcome back</p>
+        <h1 className="mt-4 font-display text-4xl font-extrabold leading-tight">Log in</h1>
         <p className="mt-3 copy-muted">Pick up your dashboard, danger zones, and streak where you left off.</p>
 
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>

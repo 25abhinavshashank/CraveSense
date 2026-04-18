@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { Brain } from 'lucide-react';
 
 function getNavClassName(isActive) {
   return [
@@ -75,8 +76,11 @@ export default function AppHeader({ user, onLogout }) {
           <div className="panel rounded-[28px] shadow-[0_18px_60px_rgba(0,0,0,0.35)]">
             <div className="flex items-center justify-between gap-3 px-4 py-3 md:px-5">
               <div className="min-w-0">
-                <NavLink to="/dashboard">
-                  <p className=" truncate font-display text-xl font-semibold leading-tight md:text-xl">CraveSense</p>
+                <NavLink to="/dashboard" className="flex items-center gap-3 group transition-opacity hover:opacity-80">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand/10 text-brand ring-1 ring-brand/20">
+                    <Brain size={20} />
+                  </div>
+                  <p className="truncate font-display text-xl font-bold leading-tight md:text-xl">CraveSense</p>
                 </NavLink>
             
               </div>

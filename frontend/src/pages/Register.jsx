@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Brain } from 'lucide-react';
 
 const defaultForm = {
   name: '',
@@ -45,8 +46,13 @@ export default function Register({ api, onAuthSuccess }) {
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-10">
       <div className="panel w-full max-w-3xl p-8 sm:p-10">
-        <p className="text-sm uppercase tracking-[0.25em] text-brand">Start your plan</p>
-        <h1 className="mt-4 font-display text-4xl font-semibold">Create your CraveSense account</h1>
+        <Link to="/" className="inline-flex mb-8">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand shadow-lg shadow-brand/20">
+            <Brain size={28} className="text-white" />
+          </div>
+        </Link>
+        <p className="text-sm font-bold uppercase tracking-wider text-brand">Start your plan</p>
+        <h1 className="mt-4 font-display text-4xl font-extrabold leading-tight">Create your account</h1>
         <p className="mt-3 copy-muted">Set your daily targets now so the coaching and dashboard feel personal from day one.</p>
 
         <form className="mt-8 grid gap-5 md:grid-cols-2" onSubmit={handleSubmit}>
