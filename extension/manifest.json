@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "An AI-powered craving tracker and diet intervention assistant.",
   "permissions": ["storage", "notifications", "tabs"],
-  "host_permissions": ["http://localhost:5000/*", "http://localhost:5173/*"],
+  "host_permissions": ["https://cravesense.onrender.com/*", "https://crave-sense-sable.vercel.app/*"],
   "action": {
     "default_title": "CraveSense",
     "default_popup": "popup.html"
@@ -12,6 +12,13 @@
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://crave-sense-sable.vercel.app/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

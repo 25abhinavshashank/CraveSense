@@ -1,6 +1,8 @@
-const BACKEND_URL = 'http://localhost:5000/api';
-const DASHBOARD_URL = 'http://localhost:5173/dashboard';
+const BACKEND_URL = 'https://cravesense.onrender.com/api';
+const DASHBOARD_URL = 'https://crave-sense-sable.vercel.app/dashboard';
 const PENDING_LOGS_KEY = 'cravesense_pending_logs';
+/** Same key as content.js — holds JWT from dashboard tab (cookie partition fix). */
+const ACCESS_TOKEN_STORAGE_KEY = 'cravesense_access_token';
 
 const state = {
   accessToken: null,
@@ -61,6 +63,7 @@ function bindEvents() {
   document.getElementById('regenerate-suggestions-btn').addEventListener('click', handleRegenerateSuggestions);
   elements.realHungerForm.addEventListener('submit', handleRealHungerSubmit);
   elements.gaveInForm.addEventListener('submit', handleGaveInSubmit);
+  document.getElementById('login-on-web-btn').addEventListener('click', openDashboard);
 
   elements.intensitySlider.addEventListener('input', (event) => {
     state.intensity = Number(event.target.value);
@@ -92,8 +95,15 @@ function hydrateDefaults() {
 }
 
 async function boot() {
-  setLoading(true, 'Checking your session...');
-  await refreshAccessToken();
+  setLoading(true, 'Syncing with Dashboard...');
+  const authenticated = await refreshAccessToken();
+  
+  if (!authenticated) {
+    setLoading(false);
+    showScreen('screen-auth-required');
+    return;
+  }
+
   await syncPendingLogs();
   updateStatusBanner();
   setLoading(false);
@@ -211,8 +221,98 @@ function clearTimer() {
   }
 }
 
+function getStoredAccessToken() {
+  if (!chrome?.storage?.local) {
+    return Promise.resolve(null);
+  }
+  return new Promise((resolve) => {
+    chrome.storage.local.get([ACCESS_TOKEN_STORAGE_KEY], (result) => {
+      resolve(result[ACCESS_TOKEN_STORAGE_KEY] || null);
+    });
+  });
+}
+
+function setStoredAccessToken(token) {
+  if (!chrome?.storage?.local) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => {
+    if (!token) {
+      chrome.storage.local.remove(ACCESS_TOKEN_STORAGE_KEY, () => resolve());
+      return;
+    }
+    chrome.storage.local.set({ [ACCESS_TOKEN_STORAGE_KEY]: token }, () => resolve());
+  });
+}
+
+async function validateAccessToken(token) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** If a dashboard tab is open, ask it to POST /auth/refresh (same cookie partition as login). */
+async function trySyncFromOpenDashboardTab() {
+  if (!chrome?.tabs?.sendMessage || !chrome?.tabs?.query) {
+    return;
+  }
+  const tabs = await new Promise((resolve) => {
+    chrome.tabs.query({ url: 'https://crave-sense-sable.vercel.app/*' }, resolve);
+  });
+  for (const tab of tabs) {
+    try {
+      await new Promise((resolve, reject) => {
+        chrome.tabs.sendMessage(tab.id, { type: 'cravesense-request-sync' }, () => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+            return;
+          }
+          resolve();
+        });
+      });
+    } catch {
+      /* tab may not have injected content script yet */
+    }
+  }
+}
+
+/**
+ * Web login sets httpOnly refresh cookies in the *website* partition; the popup runs on
+ * chrome-extension:// and does not receive those cookies. The dashboard content script
+ * writes the access JWT here; we validate it first, then fall back to refresh() if possible.
+ */
 async function refreshAccessToken() {
   try {
+    let stored = await getStoredAccessToken();
+    if (stored) {
+      const ok = await validateAccessToken(stored);
+      if (ok) {
+        state.accessToken = stored;
+        state.authenticated = true;
+        state.offline = false;
+        return true;
+      }
+      await setStoredAccessToken(null);
+    }
+
+    await trySyncFromOpenDashboardTab();
+    stored = await getStoredAccessToken();
+    if (stored) {
+      const okAfterSync = await validateAccessToken(stored);
+      if (okAfterSync) {
+        state.accessToken = stored;
+        state.authenticated = true;
+        state.offline = false;
+        return true;
+      }
+      await setStoredAccessToken(null);
+    }
+
     const response = await fetch(`${BACKEND_URL}/auth/refresh`, {
       method: 'POST',
       credentials: 'include'
@@ -228,6 +328,9 @@ async function refreshAccessToken() {
     state.accessToken = data.accessToken;
     state.authenticated = Boolean(data.accessToken);
     state.offline = false;
+    if (data.accessToken) {
+      await setStoredAccessToken(data.accessToken);
+    }
     return state.authenticated;
   } catch (error) {
     state.offline = true;

@@ -9,9 +9,11 @@
   <body>
     <div class="popup-shell">
       <header class="popup-header">
-        <div>
-          <p class="eyebrow">CraveSense</p>
-          <h1>Craving Check-In</h1>
+        <div class="header-content">
+          <div class="brand-info">
+            <p class="eyebrow">CraveSense</p>
+            <h1>Check-In</h1>
+          </div>
         </div>
         <button id="open-dashboard-top" class="ghost-button" type="button">Dashboard</button>
       </header>
@@ -134,6 +136,17 @@
             <button id="close-popup-btn" class="primary-button" type="button">Close</button>
             <button id="open-dashboard-btn" class="secondary-button" type="button">Open Dashboard</button>
             <button id="start-over-btn" class="link-button" type="button">Start another check-in</button>
+          </div>
+        </section>
+        <section id="screen-auth-required" class="screen">
+          <div style="text-align: center; padding: 20px 10px;">
+            <div style="font-size: 40px; margin-bottom: 20px;">🔒</div>
+            <h2>Login Required</h2>
+            <p class="screen-copy">
+              Open the CraveSense dashboard in a tab and sign in once. The extension reads your session from that tab —
+              the popup alone cannot use the same login cookies.
+            </p>
+            <button id="login-on-web-btn" class="primary-button" style="margin-top: 24px;">Open dashboard</button>
           </div>
         </section>
       </main>

@@ -1,5 +1,5 @@
 const BADGE_STORAGE_KEY = 'pendingCount';
-const DASHBOARD_URL = 'http://localhost:5173/dashboard';
+const DASHBOARD_URL = 'https://crave-sense-sable.vercel.app/dashboard';
 
 function updateBadge(count) {
   chrome.action.setBadgeText({ text: count > 0 ? String(count) : '' });

@@ -45,15 +45,59 @@ input {
 
 .popup-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
 
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.popup-logo {
+  width: 32px;
+  height: auto;
+  min-width: 32px;
+  display: block;
+  object-fit: contain;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  transition: transform 0.2s ease;
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+.icon-button:hover {
+  transform: rotate(45deg);
+  opacity: 1;
+  filter: grayscale(0);
+}
+
+.status-banner.success {
+  border-color: rgba(46, 213, 115, 0.4);
+  background: rgba(46, 213, 115, 0.12);
+  color: #2ed573;
+}
+
 .eyebrow {
   margin: 0;
-  font-size: 11px;
-  letter-spacing: 0.25em;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--brand);
 }
