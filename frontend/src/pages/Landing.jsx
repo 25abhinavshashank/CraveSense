@@ -89,7 +89,7 @@ export default function Landing({ user }) {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pb-12 pt-28 sm:pb-20 sm:pt-36 lg:pt-48">
+      <section className="relative overflow-hidden pb-12 pt-28 sm:pb-20 sm:pt-36 lg:pt-28">
         <div className="mx-auto max-w-7xl px-6 sm:px-10 lg:px-16">
           <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
             <motion.div 
